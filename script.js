@@ -6,6 +6,7 @@ const run = document.getElementById('run')
 let count = 0; 
 let hashtable = []
 let firstNode = 0
+let optimalPath = []
 
 body.addEventListener('click', (e)=>{
     console.log('clicked the div')
@@ -151,16 +152,26 @@ const bruteForceTSP = coordinates =>{
     // console.log(allPermutations[0].length)
 
     let minDistance = 999999;
-    let optimalPath = []
-
-    for(let i = 0; i< allPermutations.length; i++){
-        let distance = calculateDistance(allPermutations[i], coordinates)
-        console.log(allPermutations[i])
+    
+    let k = 0
+    const output = setInterval(() => {
+        // colourLines(allPermutations[i++])
+        // console.log(k++)
+        // console.log('all permutations length: ', allPermutations.length)
         let selectedLines = []
-        for(let j = 0; j< allPermutations[i].length-1; j++){
-            let linePart1 = allPermutations[i][j]
-            let linePart2 = allPermutations[i][j+1]
+        let nextSelectedLines = []
+        for(let j = 0; j< allPermutations[k].length-1; j++){
+            let linePart1 = allPermutations[k][j]
+            let linePart2 = allPermutations[k][j+1]
+            let nextLine1 
+                let nextLine2 
+            if(k < allPermutations.length-1){
+
+                nextLine1 = allPermutations[k+1][j]
+                nextLine2 = allPermutations[k+1][j+1]
+            }
             let lineID = ''
+            let nextLineID = ''
             if(linePart1 < linePart2){
                 lineID = linePart1 + "-" + linePart2
             }
@@ -168,17 +179,58 @@ const bruteForceTSP = coordinates =>{
                 lineID = linePart2 + "-" + linePart1
             }
             selectedLines.push(lineID)
+
+            //THIS PART IS FOR THE NEXT LINE
+            if(k < allPermutations.length-1){
+
+                if(nextLine1 < nextLine2){
+                    nextLineID = nextLine1 + "-" + nextLine2
+                }
+                else{
+                    nextLineID = nextLine2 + "-" + nextLine1
+                }
+                nextSelectedLines.push(nextLineID)
+            }
             // let changeLineAttribute = document.getElementById(lineID)
             // console.log(changeLineAttribute)
 
 
         }
+        let lastnode = allPermutations[k].length-1
+        console.log(lastnode)
+        selectedLines.push("0-"+allPermutations[k][allPermutations[k].length-1])
         selectedLines.forEach(element => {
 
             // element.setAttribute('class', 'line active-line')
             // console.log(document.getElementById(element))
             document.getElementById(element).setAttribute('class', 'line active-line')
         });
+
+        setTimeout(() => {
+            selectedLines.forEach(element => {
+
+                if(!nextSelectedLines.includes(element)){
+
+                    document.getElementById(element).setAttribute('class', 'line')
+                }
+
+                // element.setAttribute('class', 'line active-line')
+                // console.log(document.getElementById(element))
+            });
+        }, 100);
+        
+        k++;
+        if(k == allPermutations.length){
+            clearInterval(output)
+            setFinalPath()
+        }
+    }, 200);
+    
+
+    for(let i = 0; i< allPermutations.length; i++){
+        let distance = calculateDistance(allPermutations[i], coordinates)
+        // console.log(allPermutations[i])
+        
         // console.log("%c distance of ", 'color: #ff00ff', allPermutations[i], " is: ", distance)
         if(distance<minDistance)
         {
@@ -189,12 +241,7 @@ const bruteForceTSP = coordinates =>{
 
         }
 
-        selectedLines.forEach(element => {
-
-            // element.setAttribute('class', 'line active-line')
-            // console.log(document.getElementById(element))
-            document.getElementById(element).setAttribute('class', 'line')
-        });
+        
 
     }
 
@@ -266,3 +313,65 @@ const distanceBetweenCities = (city1, city2, coordinates) => {
 }
 
 
+const setFinalPath = () =>{
+    console.log(optimalPath)
+    // optimalPath.push(0)
+
+    let selectedLines = []
+    for(let j = 0; j< optimalPath.length-1; j++){
+        let linePart1 = optimalPath[j]
+        let linePart2 = optimalPath[j+1]
+        let lineID = ''
+        //use ternary operator for this!!!
+        if(linePart1 < linePart2){
+            lineID = linePart1 + "-" + linePart2
+        }
+        else{
+            lineID = linePart2 + "-" + linePart1
+        }
+        selectedLines.push(lineID)
+        console.log("%cTHE LINE ID IS: ", 'color: #0000ff', lineID)
+    }
+    console.table('%cTHIS IS THAT TABLE','color: #00ff00', selectedLines)
+
+    const listOfAllLines = document.getElementsByClassName('line')
+    console.log("Before",listOfAllLines)
+    console.log(listOfAllLines.length)
+            // console.log(listOfAllLines[0])
+    for(let i = 0; i< listOfAllLines.length; i++){
+        console.log(i)
+        console.log("%call lines at ",'color: #ff0000' , i, listOfAllLines[i])
+        // listOfAllLines[i].setAttribute('class', 'line')
+        listOfAllLines[i].classList.baseVal = 'line'
+        console.log("%call lines at ",'color: #ff0000' , i, listOfAllLines[i])
+    }
+    console.log("After",listOfAllLines)
+
+            // let lastnode = allPermutations[k].length-1
+        // console.log(lastnode)
+    selectedLines.push("0-"+optimalPath[optimalPath.length-1])
+
+    console.log('%cTHESE ARE THE SELECTED LINES', 'color: #66ff11')
+    console.log(selectedLines)
+
+
+
+    selectedLines.forEach(element => {
+
+                // element.setAttribute('class', 'line active-line')
+                // console.log(document.getElementById(element))
+        let someLine = document.getElementById(element)
+        console.log(someLine)
+        // someLine.setAttribute('class', 'line active-line')
+        someLine.classList.baseVal = 'active-line'
+                // document.getElementById(element).setAttribute('class', 'line active-line')
+            });
+            selectedLines.forEach(line => {
+            console.log("After adding the active class",document.getElementById(line))
+
+        })
+
+        console.log("After",listOfAllLines)
+
+
+}
