@@ -4,6 +4,8 @@ const svg = document.getElementById('svg')
 let index = 0;
 const run = document.getElementById('run')
 let count = 0; 
+let hashtable = []
+let firstNode = 0
 
 body.addEventListener('click', (e)=>{
     console.log('clicked the div')
@@ -23,7 +25,14 @@ body.addEventListener('click', (e)=>{
     node.setAttribute('cx', e.pageX)
     node.setAttribute('cy', e.pageY)
     node.setAttribute('r', '13')
-    node.setAttribute('class', 'node')
+    if(firstNode == 0){
+        node.setAttribute('class', 'node active-node')
+        firstNode++
+    }
+    else{
+        node.setAttribute('class', 'node')
+
+    }
     // console.log(e.pageX)
     // console.log(e.pageY)
     // console.log(e.pageX+', '+e.pageY)
@@ -68,20 +77,28 @@ const drawLines = () =>{
             // console.log(position1.left)
             // console.log(node2)
             // let line = document.createElement('svg')
-            let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            // let check = i+"-"+j;
+            if(!hashtable.includes(i+"-"+j)){
 
-            line.id = i+"-"+j
-            line.setAttribute('x1', node1.getAttribute('cx'))
-            line.setAttribute('x2', node2.getAttribute('cx'))
-            line.setAttribute('y1', node1.getAttribute('cy'))
-            line.setAttribute('y2', node2.getAttribute('cy'))
-
-            line.setAttribute('stroke', 'black')
-            line.setAttribute('stroke-width', '4')
-            
-
-            // console.log(line)
-            svg.appendChild(line)
+                let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                
+                line.id = i+"-"+j
+                line.setAttribute('x1', node1.getAttribute('cx'))
+                line.setAttribute('x2', node2.getAttribute('cx'))
+                line.setAttribute('y1', node1.getAttribute('cy'))
+                line.setAttribute('y2', node2.getAttribute('cy'))
+                
+                line.setAttribute('stroke', 'black')
+                line.setAttribute('stroke-width', '4')
+                line.setAttribute('class', 'line')
+                // line.setAttribute('class', 'line test-class')
+                
+                
+                
+                // console.log(line)
+                svg.appendChild(line)
+                hashtable.push(i+"-"+j)
+            }
             // console.log(nodes[i].getAttribute('pageX'))
             // line.attr('x1', nodes[i].getAttribute('pageX'))
         }
@@ -93,18 +110,23 @@ run.addEventListener('click', ()=>{
     console.log("Running brute force TSP")
     const nodes = document.getElementsByClassName('node')
     let coordinates = []
+    // console.table(document.getElementsByClassName('node'))
 
     for(let i = 0; i< nodes.length; i++){
         let posX = nodes[i].getAttribute('cx')
         let posY = nodes[i].getAttribute('cy') 
         coordinates[i] = {X: posX, 
                             Y: posY}
+        // console.log(nodes[i])
+        nodes[i].setAttribute('class', 'node active-node')
 
     }
+    // console.table(document.getElementsByClassName('node'))
+    // console.table(document.getElementsByClassName('active-node'))
     // console.table(coordinates)
     // console.log(nodes)
 
-    bruteForceTSP( coordinates)
+    bruteForceTSP(coordinates)
 
 
 
@@ -121,27 +143,58 @@ const bruteForceTSP = coordinates =>{
     }
 
     let allPermutations = []
-    console.log(allPermutations)
+    // console.log(allPermutations)
     // let count = 0; 
-    allPermutations = findAllPermutations([...cities], 0, length-1, allPermutations)
-    console.log(allPermutations[0])
-    console.log(allPermutations.length)
-    console.log(allPermutations[0].length)
+    allPermutations = findAllPermutations([...cities], 1, length-1, allPermutations)
+    // console.log(allPermutations[0])
+    // console.log(allPermutations.length)
+    // console.log(allPermutations[0].length)
 
     let minDistance = 999999;
     let optimalPath = []
 
     for(let i = 0; i< allPermutations.length; i++){
         let distance = calculateDistance(allPermutations[i], coordinates)
-        console.log("%c distance of ", 'color: #ff00ff', allPermutations[i], " is: ", distance)
-        if(distance<minDistance)
-        {
-            console.log('%cinside if statement', 'color: #00ff00')
-            minDistance = distance;
-            optimalPath = allPermutations[i]
-            console.log('%coptimal path', 'color: #00ff00', optimalPath)
+        console.log(allPermutations[i])
+        let selectedLines = []
+        for(let j = 0; j< allPermutations[i].length-1; j++){
+            let linePart1 = allPermutations[i][j]
+            let linePart2 = allPermutations[i][j+1]
+            let lineID = ''
+            if(linePart1 < linePart2){
+                lineID = linePart1 + "-" + linePart2
+            }
+            else{
+                lineID = linePart2 + "-" + linePart1
+            }
+            selectedLines.push(lineID)
+            // let changeLineAttribute = document.getElementById(lineID)
+            // console.log(changeLineAttribute)
+
 
         }
+        selectedLines.forEach(element => {
+
+            // element.setAttribute('class', 'line active-line')
+            // console.log(document.getElementById(element))
+            document.getElementById(element).setAttribute('class', 'line active-line')
+        });
+        // console.log("%c distance of ", 'color: #ff00ff', allPermutations[i], " is: ", distance)
+        if(distance<minDistance)
+        {
+            // console.log('%cinside if statement', 'color: #00ff00')
+            minDistance = distance;
+            optimalPath = allPermutations[i]
+            // console.log('%coptimal path', 'color: #00ff00', optimalPath)
+
+        }
+
+        selectedLines.forEach(element => {
+
+            // element.setAttribute('class', 'line active-line')
+            // console.log(document.getElementById(element))
+            document.getElementById(element).setAttribute('class', 'line')
+        });
 
     }
 
@@ -177,25 +230,25 @@ const calculateDistance = (permutation, coordinates) => {
     let totalDistance = 0
     for(let i =0; i< permutation.length-1; i++){
         let dist = distanceBetweenCities(permutation[i], permutation[i+1], coordinates)
-        console.log("Calculate dist of (", permutation[i],", ", permutation[i+1],") is: ", dist)
+        // console.log("Calculate dist of (", permutation[i],", ", permutation[i+1],") is: ", dist)
         totalDistance = totalDistance + dist
 
 
     }
-    console.log("Total distance of ", permutation," is: ", totalDistance)
+    // console.log("Total distance of ", permutation," is: ", totalDistance)
     let startCity = coordinates[0];
     let endNode = permutation[permutation.length-1]
     let endCity = coordinates[endNode]
-    console.log("Start City: ", startCity, "(", startCity.X,", ", startCity.Y,")")
-    console.log("End City: ", endCity,"(", endCity.X,", ", endCity.Y, ")")
+    // console.log("Start City: ", startCity, "(", startCity.X,", ", startCity.Y,")")
+    // console.log("End City: ", endCity,"(", endCity.X,", ", endCity.Y, ")")
     // let finalDist = Math.sqrt(Math.pow((coordinates[0].X - coordinates[permutation[permutation.length-1]].X)) + Math.pow((coordinates[0].Y - coordinates[permutation[permutation.length-1]].Y)))
     let finalDist = startEndDistance(startCity, endCity)
-    console.log("Final Distance of ", permutation," is: ", finalDist)
+    // console.log("Final Distance of ", permutation," is: ", finalDist)
 
 
     totalDistance = totalDistance + finalDist
 
-    console.log("%c TOTAL DISTANCE OF ", 'color: #ff0000', permutation, "is: ", totalDistance)
+    // console.log("%c TOTAL DISTANCE OF ", 'color: #ff0000', permutation, "is: ", totalDistance)
 
     return totalDistance
 
@@ -212,13 +265,4 @@ const distanceBetweenCities = (city1, city2, coordinates) => {
 
 }
 
-
-
-let factorial = length =>{
-    if(length <= 1){
-        return 1;
-    }
-    return length * factorial(length-1)
-
-}
 

@@ -11,14 +11,22 @@
 }
 
 .node{
-    height: 20px;
-    width: 20px;
-    border-radius: 20px;
-    background: #000;
-    border: 2px solid red;
-    position: absolute;
+    fill: rgba(39, 40, 40, 0.827);
 }
 
 #svg{
     outline : 2px solid aqua;
+}
+
+.active-node{
+    fill: none;
+    fill: rgb(255, 0, 0);
+}
+
+.line{
+    stroke: rgba(39, 40, 40, 0.4);
+}
+
+.active-line{
+    stroke: rgb(255, 0, 0);
 }
