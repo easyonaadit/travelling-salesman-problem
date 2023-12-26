@@ -13,6 +13,7 @@ app.use(cors())
 const port = 9876
 let count = 0;
 let optimalPath = []
+let worstPath = []
 
 
 
@@ -38,6 +39,7 @@ app.post('/api',  async (req, res)=>{
 
     let length = req.body.nodes.length
     let minDistance = 999999;
+    let maxDistance = 0
     
 
     let allPermutations = []
@@ -69,6 +71,10 @@ app.post('/api',  async (req, res)=>{
             // console.log('%coptimal path', 'color: #00ff00', optimalPath)
 
         }
+        if(distance>maxDistance){
+            maxDistance = distance;
+            worstPath = allPermutations[i]
+        }
 
         
 
@@ -77,11 +83,16 @@ app.post('/api',  async (req, res)=>{
     const values = {
         permutations: allPermutations,
         minDistance: minDistance,
-        optimalPath: optimalPath
+        optimalPath: optimalPath,
+        maxDistance: maxDistance,
+        worstPath: worstPath
     }
 
     console.log("minimum distance is: ", minDistance)
     console.log("Optimal Path is: ", optimalPath)
+    console.log("max distance is: ", maxDistance)
+    console.log("worst Path is: ", worstPath)
+    
 
     res.json(values)
 

@@ -5,10 +5,10 @@ import './styles/App.css'
 // "proxy": "https://localhost:9876",
 
 const getNodes = () => {
-    console.log("Hello world")
+    // console.log("Hello world")
     // useEffect(()=>{})
     const fetchedNodes = document.getElementsByClassName('node')
-    console.log("%cThis is the fetched nodes",'color: #ff0000',fetchedNodes)
+    // console.log("%cThis is the fetched nodes",'color: #ff0000',fetchedNodes)
     return fetchedNodes
 
   }
@@ -144,7 +144,7 @@ function App() {
                 // element.setAttribute('class', 'line active-line')
                 // console.log(document.getElementById(element))
             });
-        }, 100);
+        }, 10);
         
         k++;
         if(k == allPermutations.length){
@@ -154,9 +154,14 @@ function App() {
         lines[i].setAttribute('class', 'line')
 
     }
-            setOptimalPath(data.optimalPath, lines)
+    setTimeout(() => {
+      
+      setOptimalPath(data.optimalPath, lines)
+      setWorstPath(data.worstPath)
+      console.log("%cOptimal Path is set ", 'color : #ff0000 ')
+    }, 10);
         }
-    }, 200);
+    }, 20);
     // console.log("These are the UI nodes: ", nodes)
     // console.log("These are the UI Lines: ", lines)
 
@@ -185,6 +190,36 @@ function App() {
           for(let i = 0; i< optimalLines.length; i++){
             console.log(document.getElementById(optimalLines[i]))
             document.getElementById(optimalLines[i]).setAttribute('class', 'line active-line')
+            // document.getElementById(optimalLines[i]).setAttribute('stroke', 'rgb(0, 0, 255)')
+       
+        // lines[i].setAttribute
+
+    }
+  }
+
+  const setWorstPath = (optimalPath) => {
+    let optimalLines = []
+    let length = optimalPath.length
+    for(let j = 0; j< length-1; j++){
+            let linePart1 = optimalPath[j]
+            let linePart2 = optimalPath[j+1]
+            
+            let lineID = ''
+            if(linePart1 < linePart2){
+                lineID = linePart1 + "-" + linePart2
+            }
+            else{
+                lineID = linePart2 + "-" + linePart1
+            }
+            optimalLines.push(lineID)
+          }
+          let lineID = '0-'+optimalPath[length-1]
+          optimalLines.push(lineID)
+          console.log(optimalLines)
+          
+          for(let i = 0; i< optimalLines.length; i++){
+            console.log(document.getElementById(optimalLines[i]))
+            document.getElementById(optimalLines[i]).setAttribute('class', 'line active-line-bad')
             // document.getElementById(optimalLines[i]).setAttribute('stroke', 'rgb(0, 0, 255)')
        
         // lines[i].setAttribute

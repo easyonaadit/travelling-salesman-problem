@@ -43,7 +43,7 @@ function ViewBox() {
 
   return (
     <div className="body" id="body">
-      <svg viewBox="7 115 1500 892" width="1500" height="892" id="svg" onClick={(e) => handleSVGonClick(e)}>
+      <svg viewBox="0 55 1500 892" width="1500" height="892" id="svg" onClick={(e) => handleSVGonClick(e)}>
         {nodes.map((node, index) => {return <Node key={index} cx={node[0]} cy={node[1]}  id = {"node-"+index}/>; })}
         
         {lines.map((line, index) => {return <Line key={index} x1={line.x1} x2={line.x2} y1={line.y1} y2={line.y2}  id={line.id}/> })}
